@@ -1,36 +1,35 @@
 import inspect
 
-from django.utils.encoding import force_text, python_2_unicode_compatible
+from django.utils.encoding import force_text
 
 try:
     from enum import Enum as BaseEnum
     from enum import EnumMeta as BaseEnumMeta
     from enum import _EnumDict
 except ImportError:  # pragma: no cover
-    raise ImportError('Missing the enum module. Please install enum34.')
+    raise ImportError("Missing the enum module. Please install enum34.")
 
 
 class EnumMeta(BaseEnumMeta):
     def __new__(mcs, name, bases, attrs):
-        Labels = attrs.get('Labels')
+        Labels = attrs.get("Labels")
 
         if Labels is not None and inspect.isclass(Labels):
-            del attrs['Labels']
-            if hasattr(attrs, '_member_names'):
-                attrs._member_names.remove('Labels')
+            del attrs["Labels"]
+            if hasattr(attrs, "_member_names"):
+                attrs._member_names.remove("Labels")
 
         obj = BaseEnumMeta.__new__(mcs, name, bases, attrs)
         for m in obj:
             try:
                 m.label = getattr(Labels, m.name)
             except AttributeError:
-                m.label = m.name.replace('_', ' ').title()
+                m.label = m.name.replace("_", " ").title()
 
         return obj
 
 
-@python_2_unicode_compatible
-class Enum(EnumMeta('Enum', (BaseEnum,), _EnumDict())):
+class Enum(EnumMeta("Enum", (BaseEnum,), _EnumDict())):
     @classmethod
     def choices(cls):
         """
@@ -46,7 +45,6 @@ class Enum(EnumMeta('Enum', (BaseEnum,), _EnumDict())):
         return force_text(self.label)
 
 
-@python_2_unicode_compatible
 class IntEnum(int, Enum):
     def __str__(self):  # See Enum.__str__
         return force_text(self.label)
