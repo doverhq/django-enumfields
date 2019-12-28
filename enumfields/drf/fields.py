@@ -1,4 +1,5 @@
-from django.utils import six
+import six
+
 from django.utils.encoding import force_text
 from rest_framework.fields import ChoiceField
 
@@ -6,7 +7,7 @@ from rest_framework.fields import ChoiceField
 class EnumField(ChoiceField):
     def __init__(self, enum, lenient=False, ints_as_names=False, **kwargs):
         """
-        :param enum: The enumeration class. 
+        :param enum: The enumeration class.
         :param lenient: Whether to allow lenient parsing (case-insensitive, by value or name)
         :type lenient: bool
         :param ints_as_names: Whether to serialize integer-valued enums by their name, not the integer value
@@ -15,11 +16,11 @@ class EnumField(ChoiceField):
         self.enum = enum
         self.lenient = lenient
         self.ints_as_names = ints_as_names
-        kwargs['choices'] = tuple((e.value, getattr(e, 'label', e.name)) for e in self.enum)
+        kwargs["choices"] = tuple((e.value, getattr(e, "label", e.name)) for e in self.enum)
         super(EnumField, self).__init__(**kwargs)
 
     def to_representation(self, instance):
-        if instance in ('', u'', None):
+        if instance in ("", u"", None):
             return instance
         try:
             if not isinstance(instance, self.enum):
@@ -29,7 +30,7 @@ class EnumField(ChoiceField):
                 return instance.name.lower()
             return instance.value
         except ValueError:
-            raise ValueError('Invalid value [%r] of enum %s' % (instance, self.enum.__name__))
+            raise ValueError("Invalid value [%r] of enum %s" % (instance, self.enum.__name__))
 
     def to_internal_value(self, data):
         if isinstance(data, self.enum):

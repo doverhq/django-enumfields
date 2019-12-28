@@ -1,7 +1,8 @@
 from enum import Enum
 
 import django
-from django.utils import six
+import six
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.fields import BLANK_CHOICE_DASH
@@ -40,8 +41,7 @@ class EnumFieldMixin(object):
 
         if "choices" not in options:
             options["choices"] = [  # choices for the TypedChoiceField
-                (i, getattr(i, 'label', i.name))
-                for i in self.enum
+                (i, getattr(i, "label", i.name)) for i in self.enum
             ]
 
         super(EnumFieldMixin, self).__init__(**options)
@@ -51,7 +51,7 @@ class EnumFieldMixin(object):
         setattr(cls, name, CastOnAssignDescriptor(self))
 
     def to_python(self, value):
-        if value is None or value == '':
+        if value is None or value == "":
             return None
         if isinstance(value, self.enum):
             return value
@@ -60,7 +60,7 @@ class EnumFieldMixin(object):
                 return m
             if value == m.value or str(value) == str(m.value) or str(value) == str(m):
                 return m
-        raise ValidationError('%s is not a valid value for enum %s' % (value, self.enum), code="invalid_enum_value")
+        raise ValidationError("%s is not a valid value for enum %s" % (value, self.enum), code="invalid_enum_value")
 
     def get_prep_value(self, value):
         if value is None:
@@ -99,9 +99,9 @@ class EnumFieldMixin(object):
 
     def deconstruct(self):
         name, path, args, kwargs = super(EnumFieldMixin, self).deconstruct()
-        kwargs['enum'] = self.enum
-        kwargs.pop('choices', None)
-        if 'default' in kwargs:
+        kwargs["enum"] = self.enum
+        kwargs.pop("choices", None)
+        if "default" in kwargs:
             if hasattr(kwargs["default"], "value"):
                 kwargs["default"] = kwargs["default"].value
 
@@ -112,8 +112,7 @@ class EnumFieldMixin(object):
         # member as the `value` of SelectFields and similar.
         return [
             (i.value if isinstance(i, Enum) else i, display)
-            for (i, display)
-            in super(EnumFieldMixin, self).get_choices(include_blank, blank_choice)
+            for (i, display) in super(EnumFieldMixin, self).get_choices(include_blank, blank_choice)
         ]
 
     def formfield(self, form_class=None, choices_form_class=None, **kwargs):
@@ -121,9 +120,7 @@ class EnumFieldMixin(object):
             choices_form_class = EnumChoiceField
 
         return super(EnumFieldMixin, self).formfield(
-            form_class=form_class,
-            choices_form_class=choices_form_class,
-            **kwargs
+            form_class=form_class, choices_form_class=choices_form_class, **kwargs
         )
 
 
